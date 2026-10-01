@@ -17,8 +17,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ByteSpace - Ignite Your Tech & Design Career",
-  description: "Learn modern software engineering, AI, UI/UX design, and digital skills with industry experts at ByteSpace.",
+  metadataBase: new URL("https://bytespace.example.com"),
+  title: {
+    default: "ByteSpace - Ignite Your Tech & Design Career",
+    template: "%s | ByteSpace",
+  },
+  description:
+    "Learn modern software engineering, AI, UI/UX design, and digital skills with industry experts at ByteSpace.",
 };
 
 export default function RootLayout({

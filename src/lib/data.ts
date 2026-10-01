@@ -1,47 +1,54 @@
 import { Course, Category, Testimonial } from "@/types";
 
+/**
+ * Top-level catalog categories.
+ *
+ * `slug` must stay a lowercase substring of the `Course.category` values below,
+ * because the catalog page filters with a case-insensitive `includes()` match.
+ * Keeping the two aligned means every category filter returns results.
+ */
 export const CATEGORIES: Category[] = [
   {
     id: "1",
-    name: "Design",
-    slug: "design",
+    name: "UI/UX Design",
+    slug: "ui-ux-design",
     iconName: "Palette",
     coursesCount: 28,
   },
   {
     id: "2",
-    name: "Development",
-    slug: "development",
+    name: "Web Development",
+    slug: "web-development",
     iconName: "Code2",
     coursesCount: 34,
   },
   {
     id: "3",
-    name: "IT & Software",
-    slug: "it-software",
-    iconName: "Terminal",
+    name: "AI & Machine Learning",
+    slug: "ai-machine-learning",
+    iconName: "BrainCircuit",
     coursesCount: 19,
   },
   {
     id: "4",
-    name: "Business",
-    slug: "business",
-    iconName: "Briefcase",
-    coursesCount: 22,
-  },
-  {
-    id: "5",
-    name: "Marketing",
-    slug: "marketing",
-    iconName: "TrendingUp",
+    name: "Data Science",
+    slug: "data-science",
+    iconName: "BarChart3",
     coursesCount: 16,
   },
   {
-    id: "6",
-    name: "Photography",
-    slug: "photography",
-    iconName: "Camera",
+    id: "5",
+    name: "Animation",
+    slug: "animation",
+    iconName: "Clapperboard",
     coursesCount: 12,
+  },
+  {
+    id: "6",
+    name: "Marketing",
+    slug: "marketing",
+    iconName: "TrendingUp",
+    coursesCount: 22,
   },
 ];
 
@@ -204,3 +211,131 @@ export const STATS = [
   { value: "16+", label: "Verified Creators" },
   { value: "4.9/5", label: "Average Rating" },
 ];
+
+/**
+ * Landing-page tab rail, derived from the course data so the rail can never
+ * offer a tab that resolves to zero results.
+ */
+export const COURSE_TABS: string[] = [
+  ...Array.from(new Set(COURSES.map((course) => course.category))),
+];
+
+export const HOW_IT_WORKS = [
+  {
+    step: "01",
+    title: "Pick your path",
+    description:
+      "Choose a category or a specific track. Every course starts with a clear brief on what you will be able to ship by the end.",
+    iconName: "Compass",
+  },
+  {
+    step: "02",
+    title: "Learn by building",
+    description:
+      "Short lessons, no filler. You work through a real project with mentor code reviews instead of watching passive screencasts.",
+    iconName: "Hammer",
+  },
+  {
+    step: "03",
+    title: "Ship and get certified",
+    description:
+      "Publish your project, collect peer feedback, and earn a verifiable certificate you can put in front of hiring managers.",
+    iconName: "BadgeCheck",
+  },
+] as const;
+
+export const FEATURES = [
+  {
+    title: "Project-first curriculum",
+    description:
+      "Every module ends in something you can put in a portfolio. No theoretical filler, no abandoned half-finished exercises.",
+    iconName: "Layers",
+  },
+  {
+    title: "Lifetime access",
+    description:
+      "Buy a course once and keep it, including every future update we publish to it. No subscription lock-in on individual courses.",
+    iconName: "Infinity",
+  },
+  {
+    title: "Verified industry mentors",
+    description:
+      "Learn from practitioners who build products at top-tier companies. Every mentor is identity-checked and reviewed by students.",
+    iconName: "BadgeCheck",
+  },
+  {
+    title: "Certificates that verify",
+    description:
+      "Finish a track and get a shareable credential with a public verification link employers can check.",
+    iconName: "Award",
+  },
+  {
+    title: "Starter files included",
+    description:
+      "Source files, design tokens, and datasets ship with the lesson so you never get stuck scaffolding a project.",
+    iconName: "FolderOpen",
+  },
+  {
+    title: "Community and critiques",
+    description:
+      "Post work in progress, get structured feedback, and pair with other learners on the projects that matter.",
+    iconName: "Users",
+  },
+] as const;
+
+export const FAQS = [
+  {
+    question: "How long do I keep access to a course?",
+    answer:
+      "Forever, on any individual course you purchase. Course updates land in your library automatically. All-Access Pro is a subscription and includes every course plus future releases while it is active.",
+  },
+  {
+    question: "Do I need prior experience?",
+    answer:
+      "No. Each course declares its level up front, from Beginner through Advanced, and roughly a third of the catalog is marked All Levels. If you are unsure, start with a Beginner track in your category.",
+  },
+  {
+    question: "How do mentor code reviews work?",
+    answer:
+      "Pro members can submit a project and get line-level feedback from the mentor who wrote the course, with a target turnaround of two business days. Peer critique is available to everyone for free.",
+  },
+  {
+    question: "Is the certificate worth anything to employers?",
+    answer:
+      "It carries a public verification link that resolves to your completed project and the skills it demonstrates, so a hiring manager can confirm it is real rather than a self-issued PDF.",
+  },
+  {
+    question: "Can I get a refund if a course is not for me?",
+    answer:
+      "Yes. Individual course purchases are refundable within 14 days as long as you have completed less than 25% of the lessons. Email support and we will process it.",
+  },
+  {
+    question: "I want to teach. How do I become a mentor?",
+    answer:
+      "Apply through the creator program. We look for demonstrated work and a clear course outline. Accepted creators keep 80% of every sale and get production support for assets and video.",
+  },
+] as const;
+
+/**
+ * Mentor spotlight, derived from the course roster so a creator never appears
+ * twice and always links to a profile that exists.
+ */
+export const MENTORS = Array.from(
+  COURSES.reduce<Map<string, { name: string; avatar: string; role: string; courseIds: string[] }>>(
+    (acc, course) => {
+      const existing = acc.get(course.creator.name);
+      if (existing) {
+        existing.courseIds.push(course.id);
+      } else {
+        acc.set(course.creator.name, {
+          name: course.creator.name,
+          avatar: course.creator.avatar,
+          role: course.creator.role ?? "Mentor",
+          courseIds: [course.id],
+        });
+      }
+      return acc;
+    },
+    new Map()
+  ).values()
+);

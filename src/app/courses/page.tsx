@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { CourseCard } from "@/components/modules/CourseCard";
 import { COURSES, CATEGORIES } from "@/lib/data";
+import { labelIncludes } from "@/lib/utils";
 import {
   Search,
   Filter,
@@ -61,18 +62,16 @@ function CourseSearchContent() {
       // Search query filter
       if (
         searchQuery &&
-        !course.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !course.creator.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !course.category.toLowerCase().includes(searchQuery.toLowerCase())
+        !labelIncludes(course.title, searchQuery) &&
+        !labelIncludes(course.creator.name, searchQuery) &&
+        !labelIncludes(course.category, searchQuery)
       ) {
         return false;
       }
 
-      // Category filter
-      if (
-        selectedCategory !== "all" &&
-        !course.category.toLowerCase().includes(selectedCategory.toLowerCase())
-      ) {
+      // Category filter. Normalised so a slug like `ui-ux-design` still
+      // matches the `UI/UX Design` courses it is meant to select.
+      if (selectedCategory !== "all" && !labelIncludes(course.category, selectedCategory)) {
         return false;
       }
 

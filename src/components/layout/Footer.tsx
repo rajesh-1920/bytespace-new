@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ArrowRight, Mail, Check } from "lucide-react";
 import { TwitterIcon, GithubIcon, LinkedinIcon, YoutubeIcon } from "@/components/ui/Icons";
+import { CATEGORIES } from "@/lib/data";
 
 export function Footer() {
   const [subscribed, setSubscribed] = useState(false);
@@ -83,31 +84,16 @@ export function Footer() {
               Courses
             </h4>
             <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
-              <li>
-                <Link href="/courses?cat=frontend" className="hover:text-accent-400 transition-colors">
-                  Web Development
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?cat=uiux" className="hover:text-accent-400 transition-colors">
-                  UI/UX Design
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?cat=ai" className="hover:text-accent-400 transition-colors">
-                  AI & Machine Learning
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?cat=backend" className="hover:text-accent-400 transition-colors">
-                  Backend & Cloud
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?cat=mobile" className="hover:text-accent-400 transition-colors">
-                  Mobile Apps
-                </Link>
-              </li>
+              {CATEGORIES.slice(0, 5).map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    href={`/courses?category=${cat.slug}`}
+                    className="hover:text-accent-400 transition-colors"
+                  >
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -133,8 +119,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/testimonials" className="hover:text-accent-400 transition-colors">
+                <Link href="/#testimonials" className="hover:text-accent-400 transition-colors">
                   Student Stories
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="hover:text-accent-400 transition-colors">
+                  Frequently Asked Questions
                 </Link>
               </li>
             </ul>
@@ -185,14 +176,14 @@ export function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <p>© {new Date().getFullYear()} ByteSpace Inc. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-neutral-300 transition-colors">
-              Privacy Policy
+            <Link href="/about" className="hover:text-neutral-300 transition-colors">
+              About ByteSpace
             </Link>
-            <Link href="/terms" className="hover:text-neutral-300 transition-colors">
-              Terms of Service
+            <Link href="/pricing" className="hover:text-neutral-300 transition-colors">
+              Pricing
             </Link>
-            <Link href="/cookies" className="hover:text-neutral-300 transition-colors">
-              Cookie Settings
+            <Link href="/courses" className="hover:text-neutral-300 transition-colors">
+              Course Catalog
             </Link>
           </div>
         </div>

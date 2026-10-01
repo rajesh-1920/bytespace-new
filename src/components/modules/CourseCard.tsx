@@ -39,17 +39,17 @@ export function CourseCard({ course }: CourseCardProps) {
           {/* Metadata chips */}
           <div className="flex items-center gap-3 text-xs text-neutral-500 mb-2.5">
             <span className="flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5 text-neutral-400" />
+              <BookOpen className="w-3.5 h-3.5 text-neutral-500" />
               {course.lessonsCount} Lessons
             </span>
             <span className="w-1 h-1 rounded-full bg-neutral-300"></span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-neutral-400" />
+              <Clock className="w-3.5 h-3.5 text-neutral-500" />
               {course.duration}
             </span>
             <span className="w-1 h-1 rounded-full bg-neutral-300"></span>
             <span className="flex items-center gap-1">
-              <MessageSquare className="w-3.5 h-3.5 text-neutral-400" />
+              <MessageSquare className="w-3.5 h-3.5 text-neutral-500" />
               {course.reviewsCount}
             </span>
           </div>
@@ -80,9 +80,9 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* Price & Enrolled Bottom Bar */}
         <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <Star className="w-4 h-4 fill-rating-400 text-rating-400" />
             <span className="text-xs font-bold text-neutral-900">{course.rating}</span>
-            <span className="text-xs text-neutral-400">({course.reviewsCount})</span>
+            <span className="text-xs text-neutral-500">({course.reviewsCount})</span>
           </div>
 
           <div className="flex items-center gap-2">
