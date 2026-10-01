@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -17,12 +17,12 @@ import {
   Users,
   BookOpen,
   Award,
+  BadgeCheck,
   CheckCircle,
   Mail,
   Globe,
   Plus,
   Share2,
-  Sparkles,
 } from "lucide-react";
 
 export default function CreatorProfilePage() {
@@ -32,22 +32,62 @@ export default function CreatorProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  /*
+   * The route param anchors to a course, which resolves the mentor that owns
+   * it. Previously `creatorId` was read and discarded, so every /creator/*
+   * URL rendered the same hardcoded profile.
+   */
+  const anchorCourse = COURSES.find((course) => course.id === creatorId) ?? COURSES[0];
+  const creatorName = anchorCourse.creator.name;
+
+  const creatorCourses = useMemo(
+    () => COURSES.filter((course) => course.creator.name === creatorName),
+    [creatorName]
+  );
+
+  /* Real metrics, derived from the roster rather than hardcoded. */
+  const studentsCount = creatorCourses.reduce(
+    (sum, course) => sum + course.enrolledStudents,
+    0
+  );
+  const weightedRating =
+    creatorCourses.reduce((sum, course) => sum + course.rating, 0) / creatorCourses.length;
+  const reviewsCount = creatorCourses.reduce(
+    (sum, course) => sum + course.reviewsCount,
+    0
+  );
+
+  /* Only the flagship mentor has a hand-written bio; everyone else gets an
+     honest summary built from what they actually teach. */
+  const isFlagship = creatorName === "purepearl studio";
+
   const creator = {
-    name: "PurePearl Studio",
-    tagline: "Lead UI/UX Designer & Design Systems Educator",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
-    banner: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
-    bio: "Hi! I'm a principal design architect with over 10 years of experience creating digital design systems, web platforms, and mobile products. At ByteSpace, I create actionable, project-based courses designed to turn aspiring learners into world-class product creators.",
-    location: "San Francisco, CA",
-    website: "https://purepearl.studio",
-    studentsCount: 14200,
-    coursesCount: 6,
-    rating: 4.92,
-    reviewsCount: 889,
+    name: creatorName,
+    tagline: isFlagship
+      ? "Lead UI/UX Designer & Design Systems Educator"
+      : `${anchorCourse.creator.role ?? "Instructor"} teaching ${creatorCourses
+          .map((course) => course.category)
+          .join(" & ")} on ByteSpace`,
+    avatar: anchorCourse.creator.avatar,
+    banner:
+      isFlagship
+        ? "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80"
+        : creatorCourses[0].thumbnail,
+    bio: isFlagship
+      ? "Hi! I'm a principal design architect with over 10 years of experience creating digital design systems, web platforms, and mobile products. At ByteSpace, I create actionable, project-based courses designed to turn aspiring learners into world-class product creators."
+      : `${creatorName} publishes project-driven ${creatorCourses
+          .map((course) => course.category)
+          .join(" and ")} courses on ByteSpace, rated ${weightedRating.toFixed(
+          2
+        )} out of 5 by ${studentsCount.toLocaleString()} enrolled students.`,
+    location: isFlagship ? "San Francisco, CA" : "Remote",
+    website: isFlagship ? "https://purepearl.studio" : undefined,
+    studentsCount,
+    coursesCount: creatorCourses.length,
+    rating: Number(weightedRating.toFixed(2)),
+    reviewsCount,
     verified: true,
   };
-
-  const creatorCourses = COURSES;
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -93,16 +133,21 @@ export default function CreatorProfilePage() {
                   <p className="text-xs sm:text-sm font-medium text-neutral-600">
                     {creator.tagline}
                   </p>
-                  <p className="text-xs text-neutral-400">
-                    {creator.location} •{" "}
-                    <a
-                      href={creator.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary-800 hover:underline"
-                    >
-                      purepearl.studio
-                    </a>
+                  <p className="text-xs text-neutral-600">
+                    {creator.location}
+                    {creator.website && (
+                      <>
+                        {" • "}
+                        <a
+                          href={creator.website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary-800 hover:underline"
+                        >
+                          purepearl.studio
+                        </a>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
@@ -179,7 +224,7 @@ export default function CreatorProfilePage() {
 
               <div className="p-4 rounded-2xl bg-neutral-50/80 border border-neutral-100">
                 <div className="flex items-center justify-center sm:justify-start gap-1">
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  <Star className="w-5 h-5 fill-rating-400 text-rating-400" />
                   <span className="text-2xl sm:text-3xl font-extrabold font-poppins text-neutral-950">
                     {creator.rating}
                   </span>
@@ -213,17 +258,39 @@ export default function CreatorProfilePage() {
 
                   <div className="pt-4 border-t border-neutral-100 space-y-2.5 text-xs text-neutral-700">
                     <div className="flex items-center gap-2">
-                      <Award className="w-4 h-4 text-primary-800" />
-                      <span>Certified Design Systems Principal</span>
+                      <BadgeCheck className="w-4 h-4 text-primary-800 shrink-0" />
+                      <span>Identity-verified ByteSpace mentor</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-primary-800" />
-                      <span>ByteSpace Top Creator Award 2026</span>
+                      <Star className="w-4 h-4 text-primary-800 shrink-0" />
+                      <span>
+                        {creator.rating} average from {reviewsCount} course reviews
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-primary-800" />
-                      <span>Courses in English & Spanish</span>
-                    </div>
+                    {isFlagship ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Award className="w-4 h-4 text-primary-800 shrink-0" />
+                          <span>Certified Design Systems Principal</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-primary-800 shrink-0" />
+                          <span>Courses in English &amp; Spanish</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-primary-800 shrink-0" />
+                        <span>
+                          {creatorCourses.reduce(
+                            (sum, course) => sum + course.lessonsCount,
+                            0
+                          )}{" "}
+                          lessons across {creatorCourses.length}{" "}
+                          {creatorCourses.length === 1 ? "course" : "courses"}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

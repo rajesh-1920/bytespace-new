@@ -39,6 +39,17 @@ const config: Config = {
           950: "#243300",
           DEFAULT: "#d4fb20",
         },
+        /*
+         * Star/rating colour is its own token so course cards, reviews and
+         * testimonials stay in sync when the brand palette shifts. Lime accent
+         * is too light to read as a filled star on white.
+         */
+        rating: {
+          300: "#fcd34d",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          DEFAULT: "#fbbf24",
+        },
         neutral: {
           50: "#f5f5f6",
           100: "#e5e6e8",
